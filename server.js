@@ -8,28 +8,39 @@ const server = express();
 
 const weatherData = require('./data/weather.json');
 
-const PORT = 3001;
+const PORT = process.env.PORT;
 server.use(cors());
 
-server.get('/getWeather', (req, res)=> {
-    //weather.json[0].data[0].weather.description for seattle
-    //weather.json[0].data[0].datetime
 
-    //weather.json[1] has Paris
-    //weather.json[2] has Amman
-    let name =  req.query.cityname;
+class Forecast{
+    constructor(date, description){
+        this.date = date;
+        this.description = description;
+    }
+}
+//http://localhost:3001/weather?cityname=
+
+server.get('/weather', (req, res)=> {
     
+    let cityname =  req.query.cityname;
    
-    let weatherInfo = weatherData[0].find((item)=> {
-        if(item.city_name === name){
+   
+    let weatherInfo = weatherData.find((item)=> {
+        
+
+        if(item.city_name === cityname){
             
             return item;
         }
     })
    
-   console.log(weatherInfo);
-    res.send(weatherInfo[0])
+    let newArr = weatherInfo.data.map(e =>{
+        return new Forecast(e.datetime, e.weather.description);
+    })
+ 
+    res.send(newArr)
 })
+
 server.get('/test',(req,res)=>{
     res.send(weatherData);
 })
