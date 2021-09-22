@@ -5,37 +5,47 @@ require('dotenv').config();
 const cors = require('cors');
 
 const server = express();
-
+const axios = require('axios');
 const weatherData = require('./data/weather.json');
 
-const PORT = 3001;
+const PORT = process.env.PORT;
 server.use(cors());
 
-server.get('/getWeather', (req, res)=> {
-    //weather.json[0].data[0].weather.description for seattle
-    //weather.json[0].data[0].datetime
+class weatherData{
+    constructor(date, description){
+        this.date = date;
+        this.description = description;
+    }
+}
+server.get('/weather', getWeatherHandler);
+server.get('/test', testHandler);
+server.get('*', notFoundHandler)
 
-    //weather.json[1] has Paris
-    //weather.json[2] has Amman
-    let name =  req.query.cityname;
+ function getWeatherHandler(req, res){
     
+    let cityname =  req.query.cityname;
+   //https://api.weatherbit.io/v2.0/current?key=&city=
    
-    let weatherInfo = weatherData[0].find((item)=> {
-        if(item.city_name === name){
-            
-            return item;
-        }
-    })
-   
-   console.log(weatherInfo);
-    res.send(weatherInfo[0])
-})
-server.get('/test',(req,res)=>{
+    
+    let url = `https://api.weatherbit.io/v2.0/current?key=${process.env.WEATHER_API_KEY}&city=${cityname}`
+        console.log(url);
+
+        axios.get(url).then(item => {
+            let newArr = item.data.map(e =>{
+                return new weatherData()
+            })
+        
+        })
+
+     
+}
+
+function testHandler(req,res){
     res.send(weatherData);
-})
-server.get('*',(req,res)=>{
+}
+function notFoundHandler(req,res){
     res.status(404).send('route is not found')
-})
+}
 
 
 server.listen(PORT,()=>{
