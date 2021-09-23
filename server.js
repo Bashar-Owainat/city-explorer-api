@@ -12,12 +12,6 @@ const PORT = process.env.PORT;
 server.use(cors());
 
 
-class Forecast{
-    constructor(date, description){
-        this.date = date;
-        this.description = description;
-    }
-}
 //http://localhost:3001/weather?cityname=
 
 server.get('/weather', (req, res)=> {
