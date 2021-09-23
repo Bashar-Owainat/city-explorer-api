@@ -5,42 +5,26 @@ require('dotenv').config();
 const cors = require('cors');
 
 const server = express();
-
-const weatherData = require('./data/weather.json');
+const axios = require('axios');
+// const weatherData = require('./data/weather.json');
+const getWeatherHandler = require('./modules/Weather.js') 
+const movieHandler = require('./modules/Movie.js')
 
 const PORT = process.env.PORT;
 server.use(cors());
 
+ //https://api.weatherbit.io/v2.0/forecast/daily?key=&city=&days=3
+server.get('/weather', getWeatherHandler);
+server.get('/movie', movieHandler);
+server.get('/test', testHandler);
+server.get('*', notFoundHandler);
 
-//http://localhost:3001/weather?cityname=
-
-server.get('/weather', (req, res)=> {
-    
-    let cityname =  req.query.cityname;
-   
-   
-    let weatherInfo = weatherData.find((item)=> {
-        
-
-        if(item.city_name === cityname){
-            
-            return item;
-        }
-    })
-   
-    let newArr = weatherInfo.data.map(e =>{
-        return new Forecast(e.datetime, e.weather.description);
-    })
- 
-    res.send(newArr)
-})
-
-server.get('/test',(req,res)=>{
-    res.send(weatherData);
-})
-server.get('*',(req,res)=>{
+function testHandler(req,res){
+    res.send('test');
+}
+function notFoundHandler(req,res){
     res.status(404).send('route is not found')
-})
+}
 
 
 server.listen(PORT,()=>{
